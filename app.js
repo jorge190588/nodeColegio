@@ -40,16 +40,20 @@ app.use(
 );//route index, hello world
 
 //Asignacion de listas
+
 app.use('/', routes);
-app.use('/correo', correo);
-//app.use('/users', users);
+//app.use('/correo', correo);
+app.use('/correo',correo);
+
 app.use('/usuario/agregar',usuario.agregar);
 app.use('/usuario/editar',usuario.editar);
 app.use('/usuario/registro',usuario.registro);
+
 app.use('/modelo/guardar_notas',modelo.guardar_notas);
 app.use('/modelo/guardar_alertas',modelo.guardar_alertas);
 app.use('/modelo/lista_alumnos',modelo.lista_alumnos);
 app.use('/modelo/lista_notas',modelo.lista_notas);
+
 
 
 
