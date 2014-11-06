@@ -5,12 +5,8 @@ var router = express.Router();
 router.get('/', function(req, res) {
   //res.render('index', { title: 'Express ejemplo' });
   	res.type('application/json');
-	res.send('cadena'+cadenacnn);
+	res.send('Servicio Iniciado');
 });
 
-router.get('/cnn', function(req, res) {
-	res.type('application/json');
-	res.send('cadena');
-});
 
 module.exports = router;
