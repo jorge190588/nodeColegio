@@ -50,6 +50,9 @@ router.get('/', function(req, res) {
 
 router.get('/enviar', function(req, res) {
 //http://localhost:3100/correo/?mail=netneill@hotmail.com&asunto=demo&contenido=contenido&proveedor=gmail&mailFrom=netneillip@gmail.com&mailFromClave=zeta1919
+	res.header("Access-Control-Allow-Origin", "*");
+    res.header("Access-Control-Allow-Headers", "X-Requested-With");
+    
 	fnEnviarCorreo(req.query.proveedor,req.query.puerto,req.query.mailFrom,req.query.mailFromClave,req.query.mail,req.query.asunto,req.query.contenido,function(resultado){
 		res.type('application/json');
 		res.send(''+resultado);	
@@ -58,8 +61,7 @@ router.get('/enviar', function(req, res) {
 
 function fnEnviarCorreo(proveedor,puerto,mailFrom,mailFromClave,mail,asunto,contenido,funcionRetorno){
 
-	res.header("Access-Control-Allow-Origin", "*");
-    res.header("Access-Control-Allow-Headers", "X-Requested-With");
+
 
 	//1. Consultar Empresas.
 	if (proveedor=="gmail"){
