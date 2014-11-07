@@ -12,7 +12,7 @@ var sql;
 router.get('/porempresa',function(req,res){
 	//consultar valores de la empresa.
 	//http://localhost:3100/usuario/registro/?usuario=jorge&clave=jorge
-	 res.header("Access-Control-Allow-Origin", "*");
+	res.header("Access-Control-Allow-Origin", "*");
     res.header("Access-Control-Allow-Headers", "X-Requested-With");
     
 	sql="SELECT correo,correoClave clave,correoProveedor proveedor,correoPuerto puerto FROM empresa WHERE codigo="+req.query.empresacodigo;
@@ -55,6 +55,9 @@ router.get('/enviar', function(req, res) {
 });
 
 function fnEnviarCorreo(proveedor,puerto,mailFrom,mailFromClave,mail,asunto,contenido,funcionRetorno){
+
+	res.header("Access-Control-Allow-Origin", "*");
+    res.header("Access-Control-Allow-Headers", "X-Requested-With");
 
 	//1. Consultar Empresas.
 	if (proveedor=="gmail"){
