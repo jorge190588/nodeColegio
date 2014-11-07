@@ -5,7 +5,7 @@ var router = express.Router();
 router.get('/', function(req, res) {
   //res.render('index', { title: 'Express ejemplo' });
   	res.type('application/json');
-	res.send('Servicio Iniciado');
+	res.send('Services Run...');
 });
 
 
