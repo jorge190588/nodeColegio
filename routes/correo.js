@@ -39,6 +39,8 @@ router.get('/porempresa',function(req,res){
 //Enviar cualquier correo de cualquier origen.
 router.get('/', function(req, res) {
 	console.log('entro en correo');
+	res.header("Access-Control-Allow-Origin", "*");
+    res.header("Access-Control-Allow-Headers", "X-Requested-With");
 	//http://localhost:3100/correo/?mail=netneill@hotmail.com&asunto=demo&contenido=contenido&proveedor=gmail&mailFrom=netneillip@gmail.com&mailFromClave=zeta1919
 	fnEnviarCorreo(req.query.proveedor,req.query.puerto,req.query.mailFrom,req.query.mailFromClave,req.query.mail,req.query.asunto,req.query.contenido,function(resultado){
 		res.type('application/json');
