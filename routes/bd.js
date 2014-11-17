@@ -9,12 +9,20 @@ module.exports={
 	 		return '';
 	 	}else{
 			console.log('Conectado...');
-			cnx.query(consulta,function(err,rows){
-
+			cnx.query(consulta,function(err,result){
+				//console.log('bd largo:'+ result.affectedRows);
 				if (err){
 					funcionRetorno('',false);
 				}
-				funcionRetorno(rows,false);
+				
+				if (result==undefined){
+					funcionRetorno('',false);	
+					console.log('sql sin datos');
+				}else{
+					console.log('sql con datos');
+					funcionRetorno(result,false);
+				}
+				
 			});
 	 	}
 

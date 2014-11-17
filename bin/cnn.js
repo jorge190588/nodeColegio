@@ -17,7 +17,7 @@ exports.conexion = function(req,res){
       		respuesta=0;
    		}else{
       		console.log('Conexion correcta.');
-      		respuesta =1;
+      		respuesta=1;
    		}
 	});
 	//finalizar la conexion.

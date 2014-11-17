@@ -14,6 +14,7 @@ var modelo = require('./routes/modelo');
 var correo = require('./routes/correo');
 var routes = require('./routes');
 var usuario = require('./routes/usuario');
+var listados = require('./routes/listados');
 
 var app = express();
 
@@ -45,17 +46,20 @@ app.use('/', routes);
 //app.use('/correo', correo);
 app.use('/correo',correo);
 
+app.use('/usuario/menu',usuario.menu);
 app.use('/usuario/agregar',usuario.agregar);
 app.use('/usuario/editar',usuario.editar);
 app.use('/usuario/registro',usuario.registro);
+app.use('/usuario/paginaPermiso',usuario.paginaPermiso);
 
 app.use('/modelo/guardar_notas',modelo.guardar_notas);
 app.use('/modelo/guardar_alertas',modelo.guardar_alertas);
 app.use('/modelo/lista_alumnos',modelo.lista_alumnos);
 app.use('/modelo/lista_notas',modelo.lista_notas);
-
-
-
+app.use('/modelo/lista_notas_alumnos',modelo.lista_notas_alumnos);
+app.use('/modelo/lista_alertas_alumnos',modelo.lista_alertas_alumnos);
+app.use('/modelo/lista_alertas',modelo.lista_alertas);
+app.use('/listados/periodos',listados.periodos);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
