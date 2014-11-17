@@ -18,7 +18,7 @@ exports.registro = function(req,res){
 
 	bd.consulta(cnn,sql,function(resultado){
 		res.type('application/json');
-		res.send(resultado);
+		res.send(JSON.stringify(resultado));
 		console.log(resultado);
 	});	
 	
