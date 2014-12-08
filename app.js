@@ -15,6 +15,8 @@ var correo = require('./routes/correo');
 var routes = require('./routes');
 var usuario = require('./routes/usuario');
 var listados = require('./routes/listados');
+var modelo_estudiante = require('./routes/modelo_estudiante');
+var catedratico = require('./routes/catedratico');
 
 var app = express();
 
@@ -55,10 +57,17 @@ app.use('/usuario/paginaPermiso',usuario.paginaPermiso);
 app.use('/modelo/guardar_notas',modelo.guardar_notas);
 app.use('/modelo/guardar_alertas',modelo.guardar_alertas);
 app.use('/modelo/lista_alumnos',modelo.lista_alumnos);
+app.use('/modelo/lista_notas_movil',modelo.lista_notas_movil);
 app.use('/modelo/lista_notas',modelo.lista_notas);
 app.use('/modelo/lista_notas_alumnos',modelo.lista_notas_alumnos);
 app.use('/modelo/lista_alertas_alumnos',modelo.lista_alertas_alumnos);
 app.use('/modelo/lista_alertas',modelo.lista_alertas);
+
+app.use('/modelo_estudiante/lista',modelo_estudiante.lista);
+
+app.use('/catedratico/ver',catedratico.ver);
+
+app.use('/modelo/combo',modelo.combo);
 app.use('/listados/periodos',listados.periodos);
 
 // catch 404 and forward to error handler

@@ -133,20 +133,37 @@ exports.lista_notas= function(req,res){
 	}); // fin de consultar columnas.
 
 	//res.send(base);
-	
 }
 
 
-exports.lista_notas_alumnos= function(req,res){
+exports.lista_notas_movil= function(req,res){
 	res.header("Access-Control-Allow-Origin", "*");
     res.header("Access-Control-Allow-Headers", "X-Requested-With");
 
-	sql=" SELECT c.nombre FROM datos d, datosDetalle de, curso c, persona p ";
-	sql+=" WHERE d.codigo= de.datos AND c.codigo=de.curso AND p.carnet=d.carnet ";
+    sql=" SELECT c.nombrecompleto curso,DATE_FORMAT(d.fecha, '%d-%m-%y') fecha,'Nota Final' tipo,de.valor nota "
+	sql+=" FROM datos d, datosDetalle de, curso c, persona p, periodo pr "
+	sql+=" WHERE d.codigo= de.datos AND c.codigo=de.curso AND p.carnet=d.carnet AND d.periodo=pr.codigo "
+	sql+=" AND d.periodo='"+req.query.periodocodigo+"' AND d.carnet='"+req.query.carnet+"' AND d.empresa='"+req.query.empresacodigo+"' AND pr.ano="+req.query.ano;
+
+	bd.consulta(req.getConnection,sql,function(result){
+		res.type('application/json');
+		res.send(JSON.stringify(result));
+	}); // fin de consultar columnas.
+} // fin de lista notas alumnos		
+
+
+//Pagina web lista de alumnos, para usuarios alumnos.
+exports.lista_notas_alumnos= function(req,res){
+	res.header("Access-Control-Allow-Origin", "*");
+    res.header("Access-Control-Allow-Headers", "X-Requested-With");
+    console.log('Año '+req.query.ano);
+	sql=" SELECT c.nombre FROM datos d, datosDetalle de, curso c, persona p,periodo pr ";
+	sql+=" WHERE d.codigo= de.datos AND c.codigo=de.curso AND p.carnet=d.carnet and pr.codigo=d.periodo ";
 	sql+=" AND d.periodo="+req.query.periodocodigo;
-	sql+=" AND d.carnet='"+req.query.carnet+"' AND d.empresa="+req.query.empresacodigo;
+	sql+=" AND d.carnet='"+req.query.carnet+"' AND d.empresa="+req.query.empresacodigo+" and pr.ano="+req.query.ano;
 	sql+=" group by c.nombre ";
 
+	 
     
 	bd.consulta(req.getConnection,sql,function(columnas){
 	    var base = new Array();
@@ -162,9 +179,7 @@ exports.lista_notas_alumnos= function(req,res){
 		sql+=" WHERE d.codigo= de.datos AND c.codigo=de.curso AND p.carnet=d.carnet ";
 		sql+=" AND d.periodo="+req.query.periodocodigo;
 		sql+=" AND d.carnet='"+req.query.carnet+"' AND d.empresa="+req.query.empresacodigo;
-		
-		
-				
+						
 
 		var codAnt=0;
 		var contador=0;
@@ -227,7 +242,6 @@ exports.lista_notas_alumnos= function(req,res){
 exports.lista_alertas= function(req,res){
 	res.header("Access-Control-Allow-Origin", "*");
     res.header("Access-Control-Allow-Headers", "X-Requested-With");
-	console.log('lista_alertas');
     //columnas
     var base = new Array();
     base.push(new exports.dato('Codigo',''));
@@ -299,9 +313,9 @@ exports.lista_alertas_alumnos= function(req,res){
     base.push(new exports.dato('Telefono',''));
 		
 	sql=" SELECT DATE_FORMAT(a.Fecha, '%d-%m-%y %h:%i') Fecha,a.Descripcion,a.Correo,a.Telefono ";
-	sql+=" FROM alertas a, persona p WHERE a.carnet=p.carnet ";
+	sql+=" FROM alertas a, persona p,periodo pr WHERE a.carnet=p.carnet AND pr.codigo=a.periodo ";
 	sql+=" AND a.carnet='"+req.query.carnet+"' AND a.empresa="+req.query.empresacodigo;
-	sql+=" AND a.periodo="+req.query.periodocodigo;
+	sql+=" AND a.periodo="+req.query.periodocodigo+" and pr.ano="+req.query.ano;
 
 
 	var codAnt=0;
@@ -315,7 +329,7 @@ exports.lista_alertas_alumnos= function(req,res){
 		
 		if (resultado.length==0){
 			res.type('application/json');
-			res.send(resultado);
+			res.send(JSON.stringify(resultado));
 		}else{
 			//recorrer el resultado.
 			resultado.forEach(function(val2,index2){
@@ -332,11 +346,12 @@ exports.lista_alertas_alumnos= function(req,res){
 				filaNueva[3].valor=val2.Telefono; //telefono
 				
 
-				listaFinal.push(filaNueva);
+				listaFinal.push({'Fecha':val2.Fecha,'Descripcion': val2.Descripcion,'Correo': val2.Correo,'Telefono':val2.Telefono});
 
 				if (resultado.length==index2+1){
 					res.type('application/json');
-					res.send(listaFinal);
+					res.send(JSON.stringify(listaFinal));
+					console.log(JSON.stringify(listaFinal));
 				}
 			});//fin de for		
 		}
@@ -565,3 +580,17 @@ exports.guardar_alertas = function(req,res){
 
 }; // 0. fin de la funcion PRINCIPAL.
  
+
+
+
+exports.combo = function(req,res){
+	res.header("Access-Control-Allow-Origin", "*");
+    res.header("Access-Control-Allow-Headers", "X-Requested-With");
+  
+	sql=" SELECT "+req.query.codigo+" codigo,"+req.query.nombre+" nombre from "+req.query.tabla+" "+req.query.condicion;
+	
+	bd.consulta(req.getConnection,sql,function(resultado){
+		res.send(JSON.stringify(resultado));
+	});	
+
+}// fin de lista 

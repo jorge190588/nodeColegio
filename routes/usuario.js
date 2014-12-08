@@ -1,3 +1,4 @@
+//6013
 var bd = require('./bd.js');
 var sql;
 var cnn;
@@ -9,17 +10,33 @@ exports.registro = function(req,res){
 	//http://localhost:3100/usuario/registro/?usuario=jorge&clave=jorge
 	cnn=req.getConnection;
 	
-	sql=" SELECT u.codigo,u.nombre usuario,e.nombre empresa,e.codigo empresacodigo,admin, "
-	sql+=" IFNULL((SELECT p.codigo FROM persona p WHERE p.codigo=u.persona),0) personacodigo, "
-	sql+=" IFNULL((SELECT p.nombre FROM persona p WHERE p.codigo=u.persona),'') persona, "
-	sql+=" IFNULL((SELECT p.carnet FROM persona p WHERE p.codigo=u.persona),'') carnet "
-	sql+=" FROM usuario u, empresa e "
+	sql=" SELECT u.codigo,u.nombre usuario,e.nombre empresa,e.codigo empresacodigo,admin,  ";
+	sql+=" CASE WHEN admin=0 THEN IFNULL((SELECT p.codigo FROM persona p WHERE p.codigo=u.persona),0) ";
+	sql+=" ELSE IFNULL((SELECT p.codigo FROM catedratico p WHERE p.codigo=u.catedratico),0) END	 personacodigo,  ";
+	sql+=" CASE WHEN admin=0 THEN IFNULL((SELECT p.nombre FROM persona p WHERE p.codigo=u.persona),'') ";
+	sql+=" ELSE IFNULL((SELECT p.nombre FROM catedratico p WHERE p.codigo=u.catedratico),'') ";
+	sql+=" END AS persona, ";
+	sql+=" IFNULL((SELECT p.carnet FROM persona p WHERE p.codigo=u.persona),'') carnet,visitaFecha,visitaDispositivo, ";
+	sql+= " (SELECT p.url FROM pagina p, paginaGrupo pg, usuario_paginaGrupo upg WHERE p.paginaGrupo=pg.codigo AND upg.paginaGrupo=pg.codigo AND upg.usuario=u.codigo ORDER BY pg.orden,p.orden LIMIT 1) paginaInicio "; 
+	sql+=" FROM usuario u, empresa e ";
 	sql+=" WHERE u.nombre='"+req.query.usuario+"' AND u.clave='"+req.query.clave+"'";
 
+
 	bd.consulta(cnn,sql,function(resultado){
-		res.type('application/json');
-		res.send(JSON.stringify(resultado));
-		console.log(resultado);
+		//si registro es valido guardar fecha ultimo acceso 
+
+		if (resultado.length==1){
+			
+			sql="UPDATE usuario SET visitaFecha= NOW(),visitaDispositivo='"+req.query.dispositivo+"' where codigo="+resultado[0].codigo;
+			bd.consulta(cnn,sql,function(result){
+				res.type('application/json');
+				res.send(JSON.stringify(resultado));	
+			});	
+			
+		}else{
+				res.type('application/json');
+				res.send(JSON.stringify({codigo: 0, error: "Usuario / Clave incorrecto"}));	
+		}
 	});	
 	
 };
@@ -30,11 +47,11 @@ exports.paginaPermiso=function(req,res){
     
     sql="SELECT COUNT(p.url) contador FROM usuario_paginaGrupo upg, paginaGrupo pg,pagina p ";
 	sql+=" WHERE upg.paginaGrupo=pg.codigo AND p.paginaGrupo=pg.codigo AND upg.usuario="+req.query.usuario;
-	sql+=" AND p.url='"+req.query.pagina+"'";
+	sql+=" AND p.url='"+req.query.pagina+"' order by pg.orden,p.orden";
+
 	bd.consulta(req.getConnection,sql,function(resultado){
 		res.type('application/json');
 		res.send(resultado);
-		console.log(resultado);
 	});	
 
 	//33jl0014
@@ -47,14 +64,12 @@ exports.menu=function(req,res){
 	cnn=req.getConnection;
 	
 	sql=" SELECT pg.nombre grupo,p.nombre pagina, p.url FROM usuario_paginaGrupo upg, paginaGrupo pg,pagina p "
-	sql+=" WHERE upg.paginaGrupo=pg.codigo AND p.paginaGrupo=pg.codigo AND upg.usuario="+req.query.usuario;
+	sql+=" WHERE upg.paginaGrupo=pg.codigo AND p.paginaGrupo=pg.codigo AND upg.usuario="+req.query.usuario+" order by pg.orden,p.orden";
 	
 	bd.consulta(cnn,sql,function(resultado){
 		res.type('application/json');
 		res.send(resultado);
-		console.log(resultado);
 	});	
-	
 };
 
 exports.agregar=function(req,res){
