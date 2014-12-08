@@ -517,10 +517,11 @@ exports.guardar_alertas = function(req,res){
 		res.send(JSON.stringify({estado:0 ,msj: 'No existen datos'}));
 	}
 	else{	
-	
+		console.log('1. iniciar transaccion');
 		//1. inicio de la transaccion.
 		connection.beginTransaction(function(err) {
 			if (err) { 
+				console.log('error 2');
 				res.type('application/json');				          				
 				res.send(JSON.stringify({estado:0 ,msj:err }));
 				throw err; 
@@ -547,12 +548,15 @@ exports.guardar_alertas = function(req,res){
 						correo=fila[4];
 					}
 
-					
 					//3. insertar el encabezado.
 					sql="insert into alertas (carnet,telefono,correo,descripcion, usuario,empresa,fecha,periodo) values('"+fila[1]+"','"+telefono+"','"+correo+"','"+fila[5]+"','"+req.query.usuariocodigo+"','"+req.query.empresacodigo+"',CURRENT_TIMESTAMP(),"+req.query.periodocodigo+");"
+
+					console.log(sql);
+					
 					connection.query(sql, function(err1, result1) {
 						if(err1) { 
 					    	connection.rollback(function() {
+					    		console.log('error 3');
 					    		res.type('application/json');				          				
 				          		res.send(JSON.stringify({estado:0 ,msj:err1 }));
 					        	throw err1;
@@ -562,6 +566,7 @@ exports.guardar_alertas = function(req,res){
 			      		connection.commit(function(err4) {
 			        		if (err4) { 
 			          			connection.rollback(function() {
+			          				console.log('error 4');
 			          				res.type('application/json');				          				
 				          			res.send(JSON.stringify({estado:0 ,msj:err4 }));
 			          				throw err4;
@@ -572,6 +577,7 @@ exports.guardar_alertas = function(req,res){
 					});// fin de insertar encabezado.
 				}//fin de else en for recorrer filas.
 			}); //fin del ciclo.
+			
 			//Mensajes de Exito
 			res.type('application/json');				          				
 			res.send(JSON.stringify({estado:1 ,msj:'Registros guardados'}));
